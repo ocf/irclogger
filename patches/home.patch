@@ -1,0 +1,27 @@
+diff --git a/views/index.haml b/views/index.haml
+index fe57f70..c7fa8ba 100644
+--- a/views/index.haml
++++ b/views/index.haml
+@@ -4,8 +4,7 @@
+ 
+   .talk
+     %a.timestamp= now
+-    This is <a href="mailto:whitequark@whitequark.org">whitequark</a>'s IRC log viewer inspired by
+-    <a href="https://github.com/cschneid">Chris Schneider</a>'s <a href="http://irclogger.com">irclogger.com</a>.
++    This is <a href="mailto:whitequark@whitequark.org">whitequark</a>'s IRC log viewer.
+ 
+   .talk
+     %a.timestamp= now
+@@ -22,12 +21,3 @@
+   .talk
+     %a.timestamp= now
+     To switch between light and dark themes, use <a href="#" id="light_dark"></a>
+-
+-  .talk
+-    %a.timestamp= now
+-    If you want for this logger to be present on a particular #{Config['server']} channel, drop a letter to <a href="mailto:whitequark@whitequark.org">whitequark</a>.
+-
+-  .talk
+-    %a.timestamp= now
+-    This logger supports retrieving complete channel archives in text via <a href="http://lftp.yar.ru/">lftp</a>.
+-    Use <em>lftp -c 'mirror https://#{Config['domain']}/$CHANNEL/index/'.

@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: logger
+  labels:
+    app: logger
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: logger
+
+  # terminate old logger before starting new one
+  # otherwise we might save duplicated messages
+  strategy:
+    type: Recreate
+
+  template:
+    metadata:
+      labels:
+        app: logger
+    spec:
+      containers:
+        - name: irclogger-logger
+          image: "docker.ocf.berkeley.edu/irclogger-run:<%= version %>"
+          args: ["./logger.rb"]
+
+          env:
+            - name: DATABASE_STR
+              valueFrom:
+                secretKeyRef:
+                  name: irclogger
+                  key: database
+            - name: NICKSERV_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: irclogger
+                  key: nickserv_password
+            - name: REDIS_STR
+              value: redis://redis:6379
+
+          resources:
+            limits:
+              memory: 256Mi
+              cpu: 100m

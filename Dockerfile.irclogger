@@ -1,0 +1,37 @@
+FROM docker.ocf.berkeley.edu/theocf/debian:stretch
+ARG IRCLOGGER_SHA
+
+RUN apt-get update \
+    && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+        default-libmysqlclient-dev \
+        g++ \
+        gettext-base \
+        git \
+        make \
+        ruby \
+        ruby-bundler \
+        ruby-dev \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN mkdir -p /opt/irclogger
+RUN chown nobody:nogroup /opt/irclogger
+
+WORKDIR /opt/irclogger
+USER nobody
+
+RUN curl -sL \
+    https://github.com/whitequark/irclogger/archive/${IRCLOGGER_SHA}.tar.gz \
+    | tar -xz --strip-components=1
+
+RUN bundle install --deployment --without postgresql
+
+COPY --chown=nobody:nogroup patches /opt/irclogger/patches
+RUN git apply patches/*
+
+COPY --chown=nobody:nogroup application.yml.tmpl /opt/irclogger/config
+COPY --chown=nobody:nogroup run /opt/irclogger
+
+ENTRYPOINT ["/usr/bin/dumb-init", "--", "/opt/irclogger/run"]
+
+# vim: ft=Dockerfile

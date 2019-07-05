@@ -1,0 +1,39 @@
+---
+database: ${DATABASE_STR}
+redis: ${REDIS_STR}
+
+server: irc.ocf.berkeley.edu
+username: irclogger
+realname: OCF IRC Logger
+nickname: irclogger
+port: 6697
+ssl: true
+channels:
+  # - "#rebuild"
+  # - "#administrivia"
+  # - "#henlo"
+  # - "#test"
+  # - "#ocf"
+  # - "#politics"
+  # - "#decalcomm"
+  # - "#staffaffairscomm"
+  # - "#outreachcomm"
+  # - "#rebuild-spam"
+  # - "#atool"
+  # - "#hydra"
+  # - "#bigocf"
+  # - "#media"
+  # - "#families"
+  # - "#coffee"
+  # - "#audiophile"
+  # - "#minecraft2"
+  # - "#hpc"
+  # - "#hpc_users"
+  # - "#atlas"
+  # - "#announcements"
+  # - "#ceph"
+  - "#test"
+domain: irclogs.ocf.berkeley.edu
+
+watchdog:
+  timeout: 180

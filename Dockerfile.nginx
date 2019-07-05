@@ -1,0 +1,25 @@
+FROM docker.ocf.berkeley.edu/theocf/debian:stretch
+ARG IRCLOGGER_SHA
+
+RUN apt-get update \
+    && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+        git \
+        nginx \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY nginx.conf /srv/
+
+RUN mkdir -p /opt/irclogger
+RUN chown nobody:nogroup /opt/irclogger
+
+WORKDIR /opt/irclogger
+USER nobody
+
+RUN curl -sL \
+    https://github.com/whitequark/irclogger/archive/${IRCLOGGER_SHA}.tar.gz \
+    | tar -xz --strip-components=1
+
+CMD ["nginx", "-c", "/srv/nginx.conf", "-p", "/tmp"]
+
+# vim: ft=Dockerfile

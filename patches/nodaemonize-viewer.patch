@@ -1,0 +1,10 @@
+diff --git a/config/thin.yml b/config/thin.yml
+index 62b68c4..45b9656 100644
+--- a/config/thin.yml
++++ b/config/thin.yml
+@@ -6,4 +6,4 @@ log: log/viewer.log
+ max_conns: 1024
+ max_persistent_conns: 256
+ socket: tmp/viewer.sock
+-daemonize: true
++daemonize: false
