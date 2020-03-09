@@ -1,0 +1,3 @@
+servicePipeline()
+
+// vim: ft=groovy
