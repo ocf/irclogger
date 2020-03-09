@@ -1,5 +1,5 @@
 diff --git a/views/index.haml b/views/index.haml
-index fe57f70..c7fa8ba 100644
+index fe57f70..dda5449 100644
 --- a/views/index.haml
 +++ b/views/index.haml
 @@ -4,8 +4,7 @@
@@ -9,6 +9,15 @@ index fe57f70..c7fa8ba 100644
 -    This is <a href="mailto:whitequark@whitequark.org">whitequark</a>'s IRC log viewer inspired by
 -    <a href="https://github.com/cschneid">Chris Schneider</a>'s <a href="http://irclogger.com">irclogger.com</a>.
 +    This is <a href="mailto:whitequark@whitequark.org">whitequark</a>'s IRC log viewer.
+ 
+   .talk
+     %a.timestamp= now
+@@ -13,7 +12,7 @@
+ 
+   .talk
+     %a.timestamp= now
+-    All timestamps are in UTC.
++    All timestamps are in local time (#{Time.now.getlocal.zone}).
  
    .talk
      %a.timestamp= now
@@ -25,3 +34,16 @@ index fe57f70..c7fa8ba 100644
 -    %a.timestamp= now
 -    This logger supports retrieving complete channel archives in text via <a href="http://lftp.yar.ru/">lftp</a>.
 -    Use <em>lftp -c 'mirror https://#{Config['domain']}/$CHANNEL/index/'.
+diff --git a/views/layout.haml b/views/layout.haml
+index 9dcf6d0..f7b02ff 100644
+--- a/views/layout.haml
++++ b/views/layout.haml
+@@ -7,7 +7,7 @@
+       - if @date
+         = " on #{@date}"
+       = " — "
+-    irc logs at whitequark.org
++    irc logs at #{request.host}
+ 
+   %meta{charset: "utf-8"}
+   %meta{'http-equiv' => "X-UA-Compatible", content: "IE=9"}

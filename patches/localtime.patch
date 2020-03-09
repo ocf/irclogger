@@ -1,0 +1,117 @@
+diff --git a/lib/irclogger/message.rb b/lib/irclogger/message.rb
+index 75f22a9..264631d 100644
+--- a/lib/irclogger/message.rb
++++ b/lib/irclogger/message.rb
+@@ -26,7 +26,7 @@ class Message < Sequel::Model(:irclog)
+   end
+ 
+   def to_s
+-    Time.at(timestamp).gmtime.strftime("%Y-%m-%d %H:%M") +
++    Time.at(timestamp).localtime.strftime("%Y-%m-%d %H:%M") +
+       if talk?
+         " <#{nick}> #{line}"
+       elsif me_tell?
+@@ -47,8 +47,8 @@ class Message < Sequel::Model(:irclog)
+     day_after = date + 1
+ 
+     filter('timestamp >= ? and timestamp < ?',
+-                  Time.utc(date.year, date.month, date.day).to_i,
+-                  Time.utc(day_after.year, day_after.month, day_after.day).to_i).
++                  Time.local(date.year, date.month, date.day).to_i,
++                  Time.local(day_after.year, day_after.month, day_after.day).to_i).
+       filter(:channel => channel).
+       order(:timestamp, :id)
+   end
+@@ -60,8 +60,8 @@ class Message < Sequel::Model(:irclog)
+   end
+ 
+   def self.find_by_channel_and_month(channel, date)
+-    from = Time.utc(date.year, date.month, 1)
+-    to   = Time.utc((date >> 1).year, (date >> 1).month, 1) - 1
++    from = Time.local(date.year, date.month, 1)
++    to   = Time.local((date >> 1).year, (date >> 1).month, 1) - 1
+ 
+     filter('timestamp >= ? and timestamp < ?', from.to_i, to.to_i).
+         filter(:channel => channel).
+@@ -69,8 +69,8 @@ class Message < Sequel::Model(:irclog)
+   end
+ 
+   def self.check_by_channel_and_month(channel, date)
+-    from = Time.utc(date.year, date.month, 1)
+-    to   = Time.utc((date >> 1).year, (date >> 1).month, 1) - 1
++    from = Time.local(date.year, date.month, 1)
++    to   = Time.local((date >> 1).year, (date >> 1).month, 1) - 1
+ 
+     filter('timestamp >= ? and timestamp < ?', from.to_i, to.to_i).
+         filter(:channel => channel).
+diff --git a/lib/irclogger/viewer.rb b/lib/irclogger/viewer.rb
+index 0b2ced9..f7e517f 100644
+--- a/lib/irclogger/viewer.rb
++++ b/lib/irclogger/viewer.rb
+@@ -149,7 +149,7 @@ QUERY
+         end
+ 
+       rescue ArgumentError # invalid date or interval
+-        redirect channel_url(@channel, Time.now.gmtime.to_date)
++        redirect channel_url(@channel, Time.now.localtime.to_date)
+       end
+ 
+       case format
+@@ -162,7 +162,7 @@ QUERY
+ 
+         @messages.map(&:to_s).join("\n")
+       else
+-        @is_today = (@date == Time.now.gmtime.to_date)
++        @is_today = (@date == Time.now.localtime.to_date)
+         @topic    = Message.most_recent_topic_for(@channel, @date)
+ 
+         haml :channel
+diff --git a/views/_message.haml b/views/_message.haml
+index b852b04..fca3290 100644
+--- a/views/_message.haml
++++ b/views/_message.haml
+@@ -2,7 +2,7 @@
+      data:  { timestamp: message.timestamp },
+      id:    message.id}
+ 
+-  - time = Time.at(message.timestamp).gmtime
++  - time = Time.at(message.timestamp).localtime
+   - if mode == :topic
+     %a.timeref{href: channel_url(@channel, "#{time.to_date}##{message.id}")}
+       %time{timestamp: time.iso8601}><= time.strftime("%Y-%m-%d %H:%M")
+diff --git a/views/index.haml b/views/index.haml
+index fe57f70..51e1dab 100644
+--- a/views/index.haml
++++ b/views/index.haml
+@@ -1,4 +1,4 @@
+-- now = Time.now.gmtime.strftime("%H:%M")
++- now = Time.now.localtime.strftime("%H:%M")
+ 
+ #log
+ 
+diff --git a/views/layout.haml b/views/layout.haml
+index 9dcf6d0..3763e70 100644
+--- a/views/layout.haml
++++ b/views/layout.haml
+@@ -30,7 +30,7 @@
+   %body
+     %section#sidebar
+       %section#calendar
+-        %pre.clock= Time.now.gmtime.strftime('%H:%M UTC')
++        %pre.clock= Time.now.localtime.strftime('%H:%M ') + Time.now.getlocal.zone
+         %pre= calendar(@channel, @date, !@channel.nil?)
+ 
+       - if @channel
+diff --git a/views/search.haml b/views/search.haml
+index e488d6e..2bc9dac 100644
+--- a/views/search.haml
++++ b/views/search.haml
+@@ -22,7 +22,7 @@
+     %div{class: "log-messages with-panel"}
+       - current_date = nil
+       - @messages.each do |message|
+-        - message_date = Time.at(message.timestamp).gmtime.strftime("%Y-%m-%d")
++        - message_date = Time.at(message.timestamp).localtime.strftime("%Y-%m-%d")
+         - if current_date != message_date
+           - current_date = message_date
+           %h4= current_date
